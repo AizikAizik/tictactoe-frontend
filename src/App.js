@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Container } from 'react-bootstrap';
+import socketIOClient from 'socket.io-client';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+//components
+import GetUserDetails from './components/getuserdetails/GetUserDetails';
+import ShowUsers from './components/showusers/ShowUsers';
+import GamePlay from './components/gameplay/GamePlay'
+
+//css
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./App.css";
+
+class App extends React.Component {
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+      endpoint : 'http://localhost:8080',
+      socket : null,
+      isGameStarted : false,
+      gameId : null,
+      gameData : null
+    }
+  }
+
+  componentDidMount() {
+    const { endpoint } = this.state;
+
+    //make a connection with the server
+    const socket = socketIOClient(endpoint);
+
+    socket.on('connected', (data) =>{
+      this.setState({
+        socket
+      })
+    })
+  }
+
+  render() {
+    return (
+      <Container>
+        Welcome to the Game
+      </Container>
+    )
+  }
 }
 
 export default App;
