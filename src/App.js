@@ -38,6 +38,34 @@ class App extends React.Component {
     })
   }
 
+  registrationConfirmation = (data) => {
+    // If registration successfully redirect to player available list
+    this.setState({ isRegistered: data });
+  };
+
+  gameStartConfirmation = (data) => {
+    // If opponent player is selected then start game and redirect to game play
+    this.setState(
+        {
+          isGameStarted: data.status,
+          gameId: data.game_id,
+          gameData: data.game_data
+        }
+      );
+  };
+
+  opponentLeft = (data) => {
+    // If opponent left then go back from game play to player screen
+    alert("Opponent Left");
+    this.setState(
+      {
+        isGameStarted: false,
+        gameId: null,
+        gameData: null
+      }
+    );
+  };
+
   render() {
     return (
       <Container>

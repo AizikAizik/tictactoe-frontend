@@ -59,18 +59,78 @@ class GamePlay extends Component{
             let children = [];
             for(let j = 0; j < 3; j++){
                 let showWinnerCell = false;
-                
+                if(this.state.gameData.game_status === 'won'){
+                    for(let k =0; k < this.state.gameData.winning_combination.length; k++){
+                        if (i === this.state.gameData.winning_combination[k][0] && j === this.state.gameData.winning_combination[k][1]) {
+                            showWinnerCell = true;
+                            break;
+                        }
+                    }
+                }
+                children.push(
+                    <td key={"cell" + i + j} className={showWinnerCell ? "winner-cell" : ""}>
+                        <div
+                             key={"cell-div" + i + j}
+                             className={"cell cell-" + this.state.gameData.playboard[i][j]}
+                             onClick={(this.state.gameData.game_status !== "ongoing" || this.props.socket.id !== this.state.gameData.whose_turn || this.state.gameData.playboard[i][j] ? () => void (0) : () => this.selectCell(i, j))}>
+                        </div>
+                    </td>)
             }
+            table.push(
+                <tr key={`row${i}`}>
+                    {children}
+                </tr>
+            )
         }
+        return table;
     }
 
     render(){
+        let {gameData} = this.state;
         return(
-            <Row>
-                <Col>
-                    GamePlay!!
-                </Col>
-            </Row>
+            gameData 
+            ?
+            <Fragment>
+                <Row>
+                    <Col>
+                        <p
+                            className={'text-center '+ (this.props.socket.id !== this.state.gameData.whose_turn ? 'active-player' : "")}
+                        >
+                            {this.props.socket.id === this.state.gameData.player1 ? (this.state.gameData.game_status === "won" && this.state.gameData.game_winner === this.state.gameData.player2 ? "Opponent is Winner!!! " : " ") + this.state.gameData[this.state.gameData.player2].mobile_number + " | Played : " + this.state.gameData[this.state.gameData.player2].played + " | Won : " + this.state.gameData[this.state.gameData.player2].won + " | Draw : " + this.state.gameData[this.state.gameData.player2].draw : (this.state.gameData.game_status === "won" && this.state.gameData.game_winner === this.state.gameData.player1 ? "Opponent is Winner!!! " : " ") + this.state.gameData[this.state.gameData.player1].mobile_number + " | Played : " + this.state.gameData[this.state.gameData.player1].played + " | Won : " + this.state.gameData[this.state.gameData.player1].won + " | Draw : " + this.state.gameData[this.state.gameData.player1].draw}
+                        </p>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Table bordered>
+                            <tbody>
+                                { this.generateCellDOM() }
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <p
+                            className={"text-center " + (this.props.socket.id === this.state.gameData.whose_turn ? "active-player" : "")}>
+                            {
+                                this.props.socket.id === this.state.gameData.player1 ? (this.state.gameData.game_status === "won" && this.state.gameData.game_winner === this.state.gameData.player1 ? "You are Winner!!! " : " ") + this.state.gameData[this.state.gameData.player1].mobile_number + " | Played : " + this.state.gameData[this.state.gameData.player1].played + " | Won : " + this.state.gameData[this.state.gameData.player1].won + " | Draw : " + this.state.gameData[this.state.gameData.player1].draw : (this.state.gameData.game_status === "won" && this.state.gameData.game_winner === this.state.gameData.player2 ? "You are Winner!!! " : " ") + this.state.gameData[this.state.gameData.player2].mobile_number + " | Played : " + this.state.gameData[this.state.gameData.player2].played + " | Won : " + this.state.gameData[this.state.gameData.player2].won + " | Draw : " + this.state.gameData[this.state.gameData.player2].draw
+                            }
+                        </p>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <p>
+                            {
+                                this.state.gameData.game_status === "won" ? `New Game will be started in ${this.state.gameBetweenSeconds} seconds.` : ""
+                            }
+                        </p>
+                    </Col>
+                </Row>
+            </Fragment>
+            :
+            <p>Fetching Data</p>
         )
     }
 
